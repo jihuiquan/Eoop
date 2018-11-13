@@ -21,7 +21,7 @@ dependencies {
 }
 
 android {
-    compileSdkVersion 24
+    compileSdkVersion 25
     buildToolsVersion '25.0.0'
     sourceSets {
         main {
@@ -57,13 +57,13 @@ android {
     productFlavors {
         jianye {
             applicationId 'com.jianye.smart'
-            versionCode 112
-            versionName '1.1.2'
+            versionCode 116
+            versionName '1.1.6'
         }
         jianyetest {
             applicationId 'com.jianye.smarttest'
-            versionCode 112
-            versionName '1.1.2'
+            versionCode 116
+            versionName '1.1.6'
         }
     }
 

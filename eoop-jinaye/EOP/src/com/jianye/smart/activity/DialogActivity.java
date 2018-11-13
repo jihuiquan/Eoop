@@ -20,7 +20,7 @@ public class DialogActivity extends BaseActivity {
     private Button cancle;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) { 
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(com.movit.platform.common.R.layout.comm_dialog_for_others);
         this.setFinishOnTouchOutside(false);
