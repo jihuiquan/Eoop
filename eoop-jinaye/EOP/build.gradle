@@ -1,0 +1,147 @@
+apply plugin: 'com.android.application'
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    // IM Sdk
+    compile project(':Lib_IM')
+    // SC Sdk
+    compile project(':Lib_SC')
+    // Contacts Sdk
+    compile project(':Lib_Contacts')
+    compile project(':Lib_InternalEA')
+    compile project(':Lib_SDK')
+    compile project(':errorreporter')
+    //完整的信鸽依赖三个都必须有，如果发生依赖冲突请根据对应的依赖版本号选择高版本的依赖。（使用jcenter自动接入请确认libs 中没有信鸽的相关jar包）
+    //信鸽jar
+    compile 'com.tencent.xinge:xinge:3.2.2-release'
+    //wup包
+    compile 'com.tencent.wup:wup:1.0.0.E-release'
+    //mid包
+    compile 'com.tencent.mid:mid:4.0.6-release'
+}
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion '25.0.0'
+    sourceSets {
+        main {
+            manifest.srcFile 'AndroidManifest.xml'
+            java.srcDirs = ['src']
+            resources.srcDirs = ['src']
+            aidl.srcDirs = ['src']
+            renderscript.srcDirs = ['src']
+            res.srcDirs = ['res']
+            assets.srcDirs = ['assets']
+            jniLibs.srcDirs = ['libs']
+        }
+
+        lintOptions {
+            abortOnError false
+        }
+
+        jianye {
+            manifest.srcFile 'FutureLand_PRO/AndroidManifest.xml'
+            res.srcDirs = ['FutureLand_PRO/res']
+        }
+
+        jianyetest {
+            manifest.srcFile 'FutureLand_UAT/AndroidManifest.xml'
+            res.srcDirs = ['FutureLand_UAT/res']
+        }
+
+        debug.setRoot('build-types/debug')
+        release.setRoot('build-types/release')
+    }
+
+    //批量打包--指定配置文件
+    productFlavors {
+        jianye {
+            applicationId 'com.jianye.smart'
+            versionCode 112
+            versionName '1.1.2'
+        }
+        jianyetest {
+            applicationId 'com.jianye.smarttest'
+            versionCode 112
+            versionName '1.1.2'
+        }
+    }
+
+    productFlavors.all { flavor ->
+        flavor.manifestPlaceholders = [CHANNEL_VALUE: name]
+    }
+
+    defaultConfig {
+        applicationId 'com.jianye.smart'
+        minSdkVersion 15
+        targetSdkVersion 25
+
+        // dex突破65535的限制
+        multiDexEnabled true
+
+        ndk {
+            //选择要添加的对应cpu类型的.so库。
+            abiFilters 'armeabi', 'armeabi-v7a'
+            //信鸽KEY
+            manifestPlaceholders = [
+                    XG_ACCESS_ID : "2100270287",
+                    XG_ACCESS_KEY: "AC1292PDVC2E",
+            ]
+        }
+    }
+
+    //签名
+    signingConfigs {
+        release {
+            storeFile file("jianye.keystore")
+            storePassword "jianye@2017"
+            keyAlias "jianye_smart"
+            keyPassword "jianye@2017"
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            // 不显示Log
+            //buildConfigField "boolean", "LOG_DEBUG", "false"
+            // 是否进行混淆
+            minifyEnabled false
+            //Zipalign优化
+            //zipAlignEnabled true
+            // 移除无用的resource文件
+            //shrinkResources true
+            //混淆文件的位置
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+
+            applicationVariants.all { variant ->
+                variant.outputs.each { output ->
+                    def outputFile = output.outputFile
+                    if (outputFile != null && outputFile.name.endsWith('.apk')) {
+                        // 输出apk名称为eoop_dev_v1.0.0.apk
+                        def fileName = "eoop_${variant.productFlavors[0].name}_v${variant.productFlavors[0].versionName}.apk"
+                        output.outputFile = new File(outputFile.parent, fileName)
+                    }
+                }
+            }
+        }
+    }
+    productFlavors {
+    }
+
+    lintOptions {
+        abortOnError false
+    }
+
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+    }
+
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+}

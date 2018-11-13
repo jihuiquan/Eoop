@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="top_bg_color">#f7f7f7</color>
+    <color name="worktable_name_color">#131313</color>
+    <color name="worktable_line_color">#dbdbdb</color>
+    <color name="worktable_customer_bg_color">#fafafa</color>
+    <color name="tab_line_color">#d3dadf</color>
+    <color name="tab_name_normal_color">#919599</color>
+    <color name="tab_name_pressed_color">#3fb0ff</color>
+   <color name="splash_bg_color">#3fb0ff</color>
+</resources>

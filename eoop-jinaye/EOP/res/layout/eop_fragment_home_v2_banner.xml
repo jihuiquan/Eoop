@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent">
+
+  <android.support.v4.view.ViewPager
+    android:id="@+id/eop_fragment_home_prg_viewpager"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_centerVertical="true" />
+
+  <cn.com.xc.sdk.widget.tablayout.indicator.CircleIndicator
+    android:id="@+id/eop_fragment_home_prg_dot"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/dp_5"
+    android:layout_marginBottom="@dimen/dp_10"
+    android:layout_alignParentBottom="true"
+    android:layout_gravity="bottom"
+    app:ci_drawable="@drawable/shape_bg_home_dot_blue_radius"
+    app:ci_drawable_unselected="@drawable/shape_bg_home_dot_white_radius" />
+</RelativeLayout>
+

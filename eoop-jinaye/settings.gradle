@@ -1,0 +1,12 @@
+// IM Sdk 聊天SDK
+include ':Lib_IM', ':Lib_SDK', ':errorreporter'
+// SC Sdk 同事圈SDK
+include ':Lib_SC'
+// CommonSdk
+include ':Lib_Common'
+//CONTACTS Sdk 通讯录SDK
+include ':Lib_Contacts'
+
+include ':EOP'
+
+include ':Lib_InternalEA'

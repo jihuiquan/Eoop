@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+  <!-- 连框颜色值 -->
+  <item>
+    <shape>
+      <solid android:color="#0D94FC" />
+    </shape>
+  </item>
+
+  <!--上面 为 设置 阴影 效果-->
+  <item android:bottom="2dp">
+    <shape>
+      <solid android:color="@color/white" />
+    </shape>
+  </item>
+</layer-list>

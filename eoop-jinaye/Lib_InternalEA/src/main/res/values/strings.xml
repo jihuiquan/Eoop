@@ -1,0 +1,36 @@
+<resources tools:ignore="MissingTranslation" xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">云拓</string>
+
+    <!-- innerea -->
+    <string name="dialog_title">提示</string>
+    <string name="dialog_setting">设置</string>
+    <string name="gps_syn_success">同步数据成功！</string>
+    <string name="gps_syn">同步完成！已同步</string>
+    <string name="gps_syn_count">条数据</string>
+    <string name="gps_syn_failed">未能同步到数据！</string>
+    <string name="gps_selected_day">打卡日期</string>
+    <string name="gps_alarm_info_1">Time to end work! Please remember to check in.</string>
+
+    <string name="gps_calendar_status_normal">打卡正常</string>
+    <string name="gps_calendar_status_late">迟到/早退</string>
+    <string name="gps_calendar_status_none">未打卡</string>
+    <string name="gps_calendar_no_record">未打卡</string>
+    <string name="gps_calendar_record">打卡记录</string>
+    <string name="gps_calendar_record_first">上班打卡时间：</string>
+    <string name="gps_calendar_record_last">下班打卡时间：</string>
+    <string name="dialog_syn_ing">正在同步数据&#8230;</string>
+    <string name="dialog_do_gps_ing">正在打卡&#8230;</string>
+    <string name="gps_in_location">您已进入有效打卡范围</string>
+    <string name="gps_out_location">您不在有效打卡范围内</string>
+    <string name="gps_alarm_first">上班提醒：</string>
+    <string name="gps_alarm_last">下班提醒：</string>
+    <string name="gps_alarm_reset">恢复默认提醒时间</string>
+    <string name="gps_alarm_info">亲，打卡时间到啦，请记得打卡！</string>
+    <string name="gps_do_failed_info">本次打卡失败，请检查网络</string>
+    <string name="gps_do_time">本次打卡时间：</string>
+    <string name="dialog_gps_open_info">请开启准确度较高的GPS定位服务，才能使用GPS打卡功能</string>
+    <string name="toast_msg_clock_prompt_str">只能显示3个月内的数据</string>
+    <string name="dialog_msg_notificaiton_open_prompt_str">请确认开启通知（以便您能够及时接收RITEBOS推送的消息）</string>
+    <string name="not_get_permission">APP未获得您的授权，打卡功能无法运行！</string>
+    <string name="do_gps_failed">打卡失败</string>
+</resources>

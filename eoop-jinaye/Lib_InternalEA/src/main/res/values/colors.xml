@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 世贸人gps -->
+    <color name="title_color">#333333</color>
+    <color name="title_blue">#4ca6ff</color>
+    <color name="title_green">#3cb371</color>
+    <color name="gps_green">#33A75E</color>
+    <color name="gps_red">#F34149</color>
+    <color name="gps_grey">#AAB1B8</color>
+
+    <color name="blue_gps">#7ecef4</color>
+    <color name="blue_gps_circle">#309ddd</color>
+
+</resources>

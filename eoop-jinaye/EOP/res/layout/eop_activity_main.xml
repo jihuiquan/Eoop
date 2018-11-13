@@ -1,0 +1,215 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical">
+  <LinearLayout
+    android:id="@+id/main_btm_group"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/dp_49"
+    android:layout_alignParentBottom="true"
+    android:layout_gravity="bottom"
+    android:background="@color/white"
+    android:orientation="horizontal"
+    android:gravity="center_vertical">
+
+    <com.jianye.smart.view.MyRadioButton
+      android:id="@+id/radio_kk_bt"
+      style="@style/tab_kk_button_bottom"
+      android:clickable="true"
+      android:text="@string/tab_kk"
+      android:layout_weight="1"
+      app:drawableTop="@drawable/tab_selector_kk"
+      android:visibility="gone"
+      app:s_drawableSize="@dimen/dp_22" />
+
+    <RadioGroup
+      android:id="@+id/main_radiogroup"
+      android:layout_width="0dp"
+      android:layout_height="@dimen/dp_49"
+      android:layout_alignParentBottom="true"
+      android:layout_gravity="bottom"
+      android:background="@color/white"
+      android:layout_weight="4"
+      android:gravity="center_vertical"
+      android:orientation="horizontal">
+
+      <com.jianye.smart.view.MyRadioButton
+        android:id="@+id/radio_kk"
+        style="@style/tab_kk_button_bottom"
+        android:clickable="true"
+        android:text="@string/tab_chat"
+        android:layout_weight="1"
+        app:drawableTop="@drawable/tab_selector_check_kk"
+        android:visibility="visible"
+        app:s_drawableSize="@dimen/dp_22" />
+
+      <com.jianye.smart.view.MyRadioButton
+        android:id="@+id/radio_txl"
+        style="@style/tab_button_bottom"
+        android:clickable="true"
+        android:text="@string/tab_contact"
+        app:drawableTop="@drawable/tab_selector_contact"
+        app:s_drawableSize="@dimen/dp_22" />
+
+      <com.jianye.smart.view.MyRadioButton
+        android:id="@+id/radio_msg"
+        style="@style/tab_button_bottom"
+        android:checked="true"
+        android:clickable="true"
+        android:drawablePadding="-16dp"
+        app:drawableTop="@drawable/tab_selector_home"
+        app:s_drawableSize="@dimen/dp_36" />
+
+      <com.jianye.smart.view.MyRadioButton
+        android:id="@+id/radio_center"
+        style="@style/tab_button_bottom"
+        android:clickable="true"
+        android:text="@string/tab_colleague"
+        app:drawableTop="@drawable/tab_selector_colleague"
+        app:s_drawableSize="@dimen/dp_22" />
+
+      <com.jianye.smart.view.MyRadioButton
+        android:id="@+id/radio_wo"
+        style="@style/tab_button_bottom"
+        android:clickable="true"
+        android:text="@string/tab_setting"
+        app:drawableTop="@drawable/tab_selector_setting"
+        app:s_drawableSize="@dimen/dp_22" />
+    </RadioGroup>
+
+  </LinearLayout>
+
+  <FrameLayout
+    android:id="@+id/main_frame"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_above="@id/main_btm_group" />
+
+  <View
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/dp_1"
+    android:layout_alignTop="@id/main_btm_group"
+    android:background="@color/tab_line_color" />
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/main_frame"
+    android:orientation="horizontal"
+    android:weightSum="5">
+
+    <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_weight="1">
+
+      <TextView
+        android:id="@+id/main_chat_num"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_1"
+        android:layout_marginRight="@dimen/dp_5"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/shape_bg_red_circle"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_11"
+        android:visibility="invisible" />
+    </RelativeLayout>
+
+    <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_weight="1">
+
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_1"
+        android:layout_marginRight="@dimen/dp_5"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/shape_bg_red_circle"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_11"
+        android:visibility="invisible" />
+    </RelativeLayout>
+
+    <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_weight="1">
+
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_1"
+        android:layout_marginRight="@dimen/dp_5"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/shape_bg_red_circle"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_11"
+        android:visibility="invisible" />
+    </RelativeLayout>
+
+    <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_weight="1">
+
+      <ImageView
+        android:id="@+id/main_dian_zone_small"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_5"
+        android:layout_marginRight="@dimen/dp_10"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/shape_bg_red_small_circle"
+        android:visibility="invisible" />
+
+      <TextView
+        android:id="@+id/main_dian_zone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_1"
+        android:layout_marginRight="@dimen/dp_5"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/shape_bg_red_circle"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_11"
+        android:visibility="invisible" />
+    </RelativeLayout>
+
+    <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_weight="1">
+
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/dp_1"
+        android:layout_marginRight="@dimen/dp_5"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/shape_bg_red_circle"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:textSize="@dimen/sp_11"
+        android:visibility="invisible" />
+    </RelativeLayout>
+  </LinearLayout>
+
+  <ImageView
+    android:id="@+id/zone_main_guid"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_alignParentLeft="true"
+    android:layout_alignParentStart="true"
+      android:visibility="gone"
+    android:layout_alignParentTop="true"
+    android:background="@drawable/zone_main_guid_bg" />
+
+</RelativeLayout>

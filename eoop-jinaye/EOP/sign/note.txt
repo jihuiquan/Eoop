@@ -1,0 +1,11 @@
+密码全是
+aliyun1234
+
+//keytool -printcert -file META-INF/CERT.RSA
+
+//使用的是这个正式签名
+密码 eop123456
+别名 android.keystore:
+
+ MD5: 45:67:D9:FB:3D:43:33:7F:9B:2B:D5:39:45:07:37:06
+ SHA1: D6:57:D9:55:43:97:E1:85:9A:F7:74:9C:6F:59:79:2A:EB:6D:A7:22

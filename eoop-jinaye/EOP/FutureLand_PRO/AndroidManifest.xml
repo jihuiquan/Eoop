@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <application>
+    <!-- 百度Key -->
+	  <meta-data
+            android:name="com.baidu.lbsapi.API_KEY"
+            android:value="60x7kqL1bn9iArigysD9RqdLmGvmYiG8" />
+
+        <!--发布服务器-->
+        <meta-data
+            android:name="CHANNEL_IP"
+            android:value="gzt.jianye.com.cn:80"
+            tools:replace="android:value" />
+
+        <meta-data
+            android:name="JHXT_IP"
+            android:value="http://yyxt.900950.com"
+            tools:replace="android:value" />
+
+        <meta-data
+            android:name="CHANNEL_XMPP_IP"
+            android:value="gzt.jianye.com.cn"
+            tools:replace="android:value" />
+
+
+        <meta-data
+            android:name="CHANNEL_PORT"
+            android:value="" />
+
+        <meta-data
+            android:name="JHXT_PORT"
+            tools:replace="android:value"
+            android:value=":8601" />
+
+        <meta-data
+            android:name="CHANNEL_CMS_PORT"
+            android:value="" />
+
+        <meta-data
+            android:name="CHANNEL_TYPE"
+            android:value="jianye"
+            tools:replace="android:value" />
+
+        <meta-data
+            android:name="CHANNEL_VERSION_NAME"
+            android:value="智慧建业"
+            tools:replace="android:value" />
+        <meta-data
+            android:name="CHANNEL_SCAN"
+            android:value="false" />
+        <meta-data
+            android:name="CHANNEL_REGIST"
+            android:value="false" />
+        <meta-data
+            android:name="CHANNEL_GOHR"
+            android:value="false" />
+        <meta-data
+            android:name="CHANNEL_ORG_TREE"
+            android:value="true" />
+        <meta-data
+            android:name="CHANNEL_PASSWORD"
+            android:value="false" />
+        <meta-data
+            android:name="CHANNEL_GESTURE"
+            android:value="false" />
+        <meta-data
+            android:name="CHANNEL_CAS"
+            android:value="false" />
+        <meta-data
+            android:name="CHANNEL_ORG_FULL"
+            android:value="true"
+            tools:replace="android:value" />
+        <meta-data
+            android:name="CHANNEL_ATTENTION_SEEZONE"
+            android:value="false" />
+
+        <!--工作日志-->
+        <meta-data
+            android:name="WORKLOG"
+            android:value="http://222.185.192.11:8078" />
+
+        <meta-data
+            android:name="WORKLOG_UNREADNUM"
+            android:value="http://worklog.900950.com:8078" />
+
+        <meta-data
+            android:name="CHANNEL_VIDEO"
+            android:value="false" />
+
+        <meta-data
+            android:name="CHANNEL_FILE"
+            android:value="false" />
+
+        <meta-data
+            android:name="CHANNEL_LOCATION"
+            android:value="false" />
+
+        <meta-data
+            android:name="USE_EOOP_API"
+            android:value="true" />
+
+    </application>
+
+</manifest>

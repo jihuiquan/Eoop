@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- calendar -->
+    <declare-styleable name="BaseCellView">
+        <attr name="event_radius" format="dimension" />
+        <attr name="event_circle_padding" format="dimension" />
+    </declare-styleable>
+    <declare-styleable name="FlexibleCalendarView">
+        <attr name="startDisplayYear" format="integer" />
+        <attr name="startDisplayMonth" format="integer" />
+        <attr name="weekDayHorizontalSpacing" format="dimension" />
+        <attr name="weekDayVerticalSpacing" format="dimension" />
+        <attr name="monthDayHorizontalSpacing" format="dimension" />
+        <attr name="monthDayVerticalSpacing" format="dimension" />
+        <attr name="weekViewBackground" format="reference" />
+        <attr name="monthViewBackground" format="reference" />
+        <attr name="showDatesOutsideMonth" format="boolean" />
+    </declare-styleable>
+    <declare-styleable name="CellState">
+        <attr name="state_date_regular" format="boolean" />
+        <attr name="state_date_today" format="boolean" />
+        <attr name="state_date_selected" format="boolean" />
+        <attr name="state_date_outside_month" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="SwitchButton">
+        <attr name="kswOnDrawable" format="reference" />
+        <attr name="kswOffDrawable" format="reference" />
+        <attr name="kswThumbDrawable" format="reference" />
+        <attr name="kswThumb_margin" format="dimension|reference" />
+        <attr name="kswThumb_marginTop" format="dimension|reference" />
+        <attr name="kswThumb_marginBottom" format="dimension|reference" />
+        <attr name="kswThumb_marginLeft" format="dimension|reference" />
+        <attr name="kswThumb_marginRight" format="dimension|reference" />
+        <attr name="kswThumb_width" format="dimension|reference" />
+        <attr name="kswThumb_height" format="dimension|reference" />
+        <attr name="kswOnColor" format="color|reference" />
+        <attr name="kswOffColor" format="color|reference" />
+        <attr name="kswThumbColor" format="color|reference" />
+        <attr name="kswThumbPressedColor" format="color|reference" />
+        <attr name="kswAnimationVelocity" format="integer" />
+        <attr name="kswRadius" format="integer" />
+        <attr name="kswMeasureFactor" format="float" />
+        <attr name="kswInsetLeft" format="dimension|reference" />
+        <attr name="kswInsetRight" format="dimension|reference" />
+        <attr name="kswInsetTop" format="dimension|reference" />
+        <attr name="kswInsetBottom" format="dimension|reference" />
+    </declare-styleable>
+
+</resources>

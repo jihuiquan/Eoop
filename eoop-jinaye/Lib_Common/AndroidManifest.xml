@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.movit.platform.common"
+    android:versionCode="1"
+    android:versionName="1.0">
+
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- 在SDCard中创建与删除文件权限 -->
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.ACCESS_DOWNLOAD_MANAGER" />
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
+    <uses-permission android:name="android.permission.DISABLE_KEYGUARD" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.WRITE_SMS" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
+
+    <uses-permission android:name="android.permission.FLASHLIGHT" />
+    <!-- location -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.SYSTEM_OVERLAY_WINDOW" />
+
+    <application
+        android:allowBackup="true"
+        android:largeHeap="true">
+
+        <!-- Common -->
+        <activity
+            android:name="com.movit.platform.framework.view.viewpager.ImageViewPagerActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name="com.movit.platform.common.module.user.activity.UserDetailActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait" />
+
+        <activity
+            android:name="com.movit.platform.common.module.organization.activity.OrgActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+
+        <activity
+            android:name="com.movit.platform.common.module.user.activity.WebActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustResize" />
+
+        <!-- JINGRUI -->
+
+        <!--  <meta-data
+              android:name="CHANNEL_IP"
+              android:value="172.19.50.76" />
+          <meta-data
+              android:name="CHANNEL_PORT"
+              android:value="" />
+          <meta-data
+              android:name="CHANNEL_CMS_PORT"
+              android:value="" />-->
+
+        <!-- JINGRUI -->
+
+        <!--  <meta-data
+             android:name="CHANNEL_IP"
+             android:value="58.210.98.43" />
+         <meta-data
+             android:name="CHANNEL_PORT"
+             android:value=":8081" />
+         <meta-data
+             android:name="CHANNEL_CMS_PORT"
+             android:value=":8081" />-->
+
+        <!-- EOP -->
+
+        <!-- <meta-data
+             android:name="CHANNEL_IP"
+             android:value="218.4.117.12" />
+         <meta-data
+             android:name="CHANNEL_PORT"
+             android:value=":1040" />
+         <meta-data
+             android:name="CHANNEL_CMS_PORT"
+             android:value=":1050" />-->
+
+        <!--发布服务器-->
+        <meta-data
+            android:name="CHANNEL_IP"
+            android:value="172.18.50.94" />
+
+        <!--172.18.50.94-->
+
+        <!--175.102.130.56-->
+        <!--172.19.50.58-->
+        <!--172.18.50.94-->
+        <!--172.18.13.250:8080-->
+        <meta-data
+            android:name="CHANNEL_PORT"
+            android:value="" />
+        <meta-data
+            android:name="CHANNEL_CMS_PORT"
+            android:value="" />
+        <meta-data
+            android:name="CHANNEL_TYPE"
+            android:value="dev" />
+
+        <meta-data
+            android:name="CHANNEL_VERSION_NAME"
+            android:value="内部试用" />
+        <meta-data
+            android:name="CHANNEL_SCAN"
+            android:value="false" />
+        <meta-data
+            android:name="CHANNEL_REGIST"
+            android:value="false" />
+        <meta-data
+            android:name="CHANNEL_GOHR"
+            android:value="false" />
+        <meta-data
+            android:name="CHANNEL_ORG_TREE"
+            android:value="true" />
+        <meta-data
+            android:name="CHANNEL_PASSWORD"
+            android:value="false" />
+        <meta-data
+            android:name="CHANNEL_GESTURE"
+            android:value="false" />
+        <meta-data
+            android:name="CHANNEL_CAS"
+            android:value="false" />
+        <meta-data
+            android:name="CHANNEL_ORG_FULL"
+            android:value="false" />
+        <meta-data
+            android:name="CHANNEL_ATTENTION_SEEZONE"
+            android:value="false" />
+    </application>
+
+</manifest>
