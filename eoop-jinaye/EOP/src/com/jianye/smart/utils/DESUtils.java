@@ -16,15 +16,20 @@ public class DESUtils {
     private static final String ARG1 = "Useraccount=";
     private static final String ARG2 = "&Timestamp=";
 
-    public static String encryptDES(String userName) throws Exception {
+    public static String encryptDES(String userName)  {
+        try {
         String s = ARG1 + userName + ARG2 + getTimeString();
         System.out.println("s=" + s);
         IvParameterSpec zeroIv = new IvParameterSpec(KEY.getBytes());
         SecretKeySpec key = new SecretKeySpec(KEY.getBytes(), "DES");
         Cipher cipher = Cipher.getInstance("DES/CBC/PKCS5Padding");
-        cipher.init(Cipher.ENCRYPT_MODE, key, zeroIv);
+            cipher.init(Cipher.ENCRYPT_MODE, key, zeroIv);
         byte[] encryptedData = cipher.doFinal(s.getBytes());
         return printHexString(encryptedData);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     //将指定byte数组以16进制的形式打印到控制台

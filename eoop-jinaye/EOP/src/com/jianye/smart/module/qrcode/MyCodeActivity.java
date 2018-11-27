@@ -1,9 +1,5 @@
 package com.jianye.smart.module.qrcode;
 
-import java.nio.charset.Charset;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -18,12 +14,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.zxing.Result;
-import com.mining.app.zxing.view.ViewfinderView;
-import com.movit.platform.common.constants.CommConstants;
-import com.movit.platform.framework.utils.HttpClientUtils;
 import com.jianye.smart.R;
 import com.jianye.smart.application.EOPApplication;
 import com.jianye.smart.module.workbench.activity.WebViewActivity;
+import com.mining.app.zxing.view.ViewfinderView;
+import com.movit.platform.common.constants.CommConstants;
+import com.movit.platform.common.okhttp.utils.AesUtils;
+import com.movit.platform.framework.core.okhttp.callback.StringCallback;
+import com.movit.platform.framework.manager.HttpManager;
+import com.movit.platform.framework.utils.HttpClientUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.nio.charset.Charset;
 
 public class MyCodeActivity extends MipcaActivity {
 	private ImageView back;
@@ -58,7 +62,7 @@ public class MyCodeActivity extends MipcaActivity {
 	}
 
 	@Override
-	public void handleDecode(Result result, Bitmap barcode) {
+	public void handleDecode(Result result, final Bitmap barcode) {
 
 		Log.d("test","handleDecode");
 
@@ -90,14 +94,40 @@ public class MyCodeActivity extends MipcaActivity {
 					}
 				}).start();
 			} else {
-				Intent resultIntent = new Intent();
-				Bundle bundle = new Bundle();
-				bundle.putString("result", resultString);
-				bundle.putParcelable("bitmap", barcode);
-				resultIntent.putExtras(bundle);
+				JSONObject object = new JSONObject();
+				JSONObject req = new JSONObject();
+				try {
+					object.put("userName", CommConstants.loginConfig.getmUserInfo().getEmpAdname());
+					req.put("secretMsg", AesUtils.getInstance().encrypt(object.toString()));
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				HttpManager.postJson("http://gzt.jianye.com.cn:80/eoop-api/rest/token/getToken",
+						req.toString(), new StringCallback() {
+
+
+                            @Override
+                            public void onError(okhttp3.Call call, Exception e) {
+								Log.d("test", "onError() called with: call = [" + call + "], e = [" + e + "]");
+                            }
+
+                            @Override
+							public void onResponse(String response) throws JSONException {
+								JSONObject object = new JSONObject(response);
+								if (object.optBoolean("ok")) {
+									Intent resultIntent = new Intent();
+									Bundle bundle = new Bundle();
+									String s = resultString + "&systemCode=gzt&token=" + object.optString("value");
+									bundle.putString("result", s);
+									bundle.putParcelable("bitmap", barcode);
+									resultIntent.putExtras(bundle);
 //				this.setResult(RESULT_OK, resultIntent);
-				startActivity(new Intent(this, WebViewActivity.class).putExtra(
-						"URL", resultString).putExtra("sao-sao", true));
+									startActivity(new Intent(MyCodeActivity.this, WebViewActivity.class).putExtra(
+											"URL", s).putExtra("sao-sao", true));
+								}
+							}
+						});
+
 			}
 		}
 		MyCodeActivity.this.finish();

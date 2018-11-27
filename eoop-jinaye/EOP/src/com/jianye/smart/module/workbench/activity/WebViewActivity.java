@@ -666,7 +666,9 @@ public class WebViewActivity extends BaseActivity implements OnCheckedChangeList
         webView.getSettings().setAllowFileAccess(true);// 设置允许访问文件数据
         webView.getSettings().setAppCacheEnabled(true);
         webView.getSettings().setDatabaseEnabled(true);
-        webView.getSettings().setUserAgentString("jianye-echat");
+
+        String ua = webView.getSettings().getUserAgentString();
+        webView.getSettings().setUserAgentString(ua+";jianye-echat");
 
         // User settings
         webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
