@@ -1,13 +1,32 @@
 package com.jianye.smart.module.workbench.manager;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
+
+import com.jianye.smart.R;
+import com.jianye.smart.activity.MainActivity;
+import com.jianye.smart.application.EOPApplication;
+import com.jianye.smart.module.futureland.MagazineListActivity;
+import com.jianye.smart.module.qrcode.MyCodeActivity;
+import com.jianye.smart.module.workbench.activity.SuggestionActivity;
+import com.jianye.smart.module.workbench.activity.WatingActivity;
+import com.jianye.smart.module.workbench.activity.WebViewActivity;
+import com.jianye.smart.module.workbench.attendance.activity.AttendanceListActivity;
+import com.jianye.smart.module.workbench.bdo.activity.BDOCloudActivity;
+import com.jianye.smart.module.workbench.bdo.activity.BDODocumentActivity;
+import com.jianye.smart.module.workbench.constants.Constants;
+import com.jianye.smart.module.workbench.meeting.activity.MeetingActivity;
+import com.jianye.smart.module.workbench.model.WorkTable;
+import com.jianye.smart.utils.DESUtils;
 import com.movit.platform.common.constants.CommConstants;
 import com.movit.platform.common.okhttp.OkHttpUtils;
 import com.movit.platform.common.okhttp.callback.Callback;
@@ -22,35 +41,24 @@ import com.movit.platform.framework.utils.MD5Utils;
 import com.movit.platform.framework.utils.SharedPreUtils;
 import com.movit.platform.framework.utils.StringUtils;
 import com.movit.platform.innerea.activity.MapGPSActivity;
-import com.jianye.smart.R;
-import com.jianye.smart.application.EOPApplication;
-import com.jianye.smart.module.futureland.MagazineListActivity;
-import com.jianye.smart.module.qrcode.MyCodeActivity;
-import com.jianye.smart.module.workbench.activity.SuggestionActivity;
-import com.jianye.smart.module.workbench.activity.WatingActivity;
-import com.jianye.smart.module.workbench.activity.WebViewActivity;
-import com.jianye.smart.module.workbench.attendance.activity.AttendanceListActivity;
-import com.jianye.smart.module.workbench.bdo.activity.BDOCloudActivity;
-import com.jianye.smart.module.workbench.bdo.activity.BDODocumentActivity;
-import com.jianye.smart.module.workbench.constants.Constants;
-import com.jianye.smart.module.workbench.meeting.activity.MeetingActivity;
-import com.jianye.smart.module.workbench.model.WorkTable;
-import com.jianye.smart.utils.DESUtils;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import okhttp3.Call;
 import okhttp3.Response;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Created by Administrator on 2016/1/28.
  */
 public class WorkTableClickDelagate {
 
-    public static  String JIANYE_MYERP_SHENPI = "";
+    public static String JIANYE_MYERP_SHENPI = "";
     private Context context;
     private SharedPreUtils spUtil;
     private DialogUtils progressDialogUtil;
@@ -84,7 +92,7 @@ public class WorkTableClickDelagate {
 
     public void onClickWorkTable(List<WorkTable> myWorkTables, int position) {
         WorkTable table = myWorkTables.get(position);
-        if ("com.tencent.mobileqq".equals(table.getAndroid_access_url())){
+        if ("com.tencent.mobileqq".equals(table.getAndroid_access_url())) {
             table.setAndroid_access_url("com.kdweibo.client");
         }
         onClickWorkTable(table);
@@ -97,30 +105,30 @@ public class WorkTableClickDelagate {
         }
         if (Constants.TYPE_INTERNAL_HTML5.equals(table.getType())) {
             try {
-                if ("1".equals(table.getIsToken())){
+                if ("1".equals(table.getIsToken())) {
                     JSONObject object = new JSONObject();
                     JSONObject req = new JSONObject();
                     object.put("userName", CommConstants.loginConfig.getmUserInfo().getEmpAdname());
                     req.put("secretMsg", AesUtils.getInstance().encrypt(object.toString()));
                     HttpManager.postJson("http://gzt.jianye.com.cn:80/eoop-api/rest/token/getToken",
-                        req.toString(), new StringCallback() {
-                            @Override
-                            public void onError(Call call, Exception e) {
-                            }
-
-                            @Override
-                            public void onResponse(String response) throws JSONException {
-                                JSONObject object = new JSONObject(response);
-                                if (object.optBoolean("ok")) {
-                                    table.setToken(object.optString("value"));
-                                    getWorkTableUrl(table);
+                            req.toString(), new StringCallback() {
+                                @Override
+                                public void onError(Call call, Exception e) {
                                 }
-                            }
-                        });
-                }else {
+
+                                @Override
+                                public void onResponse(String response) throws JSONException {
+                                    JSONObject object = new JSONObject(response);
+                                    if (object.optBoolean("ok")) {
+                                        table.setToken(object.optString("value"));
+                                        getWorkTableUrl(table);
+                                    }
+                                }
+                            });
+                } else {
                     getWorkTableUrl(table);
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
             }
         } else if (Constants.TYPE_NATIVE_APP.equals(table.getType())) {
             if ("suggest".equals(table.getAndroid_access_url())) {
@@ -209,9 +217,44 @@ public class WorkTableClickDelagate {
                                     }
                                 }
                             });
-                }catch (Exception e){
+                } catch (Exception e) {
                 }
-            }else {
+            } else if ("3".equals(table.getIsToken())) {
+                try {
+                    JSONObject object = new JSONObject();
+                    JSONObject req = new JSONObject();
+                    object.put("userName", CommConstants.loginConfig.getmUserInfo().getEmpAdname());
+                    object.put("tokenType", "3");
+                    req.put("secretMsg", AesUtils.getInstance().encrypt(object.toString()));
+                    HttpManager.postJson("http://gzt.jianye.com.cn:80/eoop-api/rest/token/getToken",
+                            req.toString(), new StringCallback() {
+                                @Override
+                                public void onError(Call call, Exception e) {
+                                }
+
+                                @Override
+                                public void onResponse(String response) throws JSONException {
+                                    JSONObject object = new JSONObject(response);
+                                    if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
+                                        JSONObject bean = object.optJSONObject("objValue");
+                                        PackageManager packageManager = context.getPackageManager();
+                                        Uri parse = Uri.parse("guoxinsdk://?json=" + bean.toString());
+                                        Intent intent = new Intent(Intent.ACTION_VIEW, parse);
+                                        List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
+                                        boolean b = !activities.isEmpty();
+                                        if (b) {
+                                            MainActivity activity = (MainActivity) context;
+                                            activity.startActivityForResult(intent, 1);
+                                        } else {
+                                            Toast.makeText(context, "请下载最新版国信影像云", Toast.LENGTH_SHORT).show();
+                                        }
+                                    }
+                                }
+                            });
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } else {
                 boolean flag = ActivityUtils.openThirdApplicationWithPackageName(context, table.getAndroid_access_url());
                 if (!flag) {
                     if (StringUtils.notEmpty(table.getRemarks())) {
@@ -238,29 +281,29 @@ public class WorkTableClickDelagate {
                     .getAndroid_access_url())) {
                 try {
                     final String urlString = CommConstants.TIMESHEET_URL;
-                    if ("1".equals(table.getIsToken())){
+                    if ("1".equals(table.getIsToken())) {
                         JSONObject object = new JSONObject();
                         object.put("userName", CommConstants.loginConfig.getmUserInfo().getEmpAdname());
                         HttpManager.postJson("http://gzt.jianye.com.cn:80/eoop-api/rest/token/getToken",
-                            object.toString(), new StringCallback() {
-                                @Override
-                                public void onError(Call call, Exception e) {
-                                }
-
-                                @Override
-                                public void onResponse(String response) throws JSONException {
-                                    JSONObject object = new JSONObject(response);
-                                    if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
-                                        JSONObject bean = object.optJSONObject("objValue");
-                                        Intent intent = new Intent(context, WebViewActivity.class);
-                                        intent.putExtra("title", table.getName());
-                                        intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
-                                        intent.putExtra("TITLE", "TimeSheet");
-                                        context.startActivity(intent);
+                                object.toString(), new StringCallback() {
+                                    @Override
+                                    public void onError(Call call, Exception e) {
                                     }
-                                }
-                            });
-                    }else {
+
+                                    @Override
+                                    public void onResponse(String response) throws JSONException {
+                                        JSONObject object = new JSONObject(response);
+                                        if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
+                                            JSONObject bean = object.optJSONObject("objValue");
+                                            Intent intent = new Intent(context, WebViewActivity.class);
+                                            intent.putExtra("title", table.getName());
+                                            intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
+                                            intent.putExtra("TITLE", "TimeSheet");
+                                            context.startActivity(intent);
+                                        }
+                                    }
+                                });
+                    } else {
                         Intent intent = new Intent(context, WebViewActivity.class);
                         intent.putExtra("title", table.getName());
                         intent.putExtra("URL", urlString);
@@ -273,29 +316,29 @@ public class WorkTableClickDelagate {
             } else if ("duty".equals(table.getAndroid_access_url())) {// 考勤
                 try {
                     final String urlString = Constants.URL_OFFICE_ATTENDANCE;
-                    if ("1".equals(table.getIsToken())){
+                    if ("1".equals(table.getIsToken())) {
                         JSONObject object = new JSONObject();
                         object.put("userName", CommConstants.loginConfig.getmUserInfo().getEmpAdname());
                         HttpManager.postJson("http://gzt.jianye.com.cn:80/eoop-api/rest/token/getToken",
-                            object.toString(), new StringCallback() {
-                                @Override
-                                public void onError(Call call, Exception e) {
-                                }
-
-                                @Override
-                                public void onResponse(String response) throws JSONException {
-                                    JSONObject object = new JSONObject(response);
-                                    if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
-                                        JSONObject bean = object.optJSONObject("objValue");
-                                        Intent intent = new Intent(context, WebViewActivity.class);
-                                        intent.putExtra("title", table.getName());
-                                        intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
-                                        intent.putExtra("goChat", true);
-                                        context.startActivity(intent);
+                                object.toString(), new StringCallback() {
+                                    @Override
+                                    public void onError(Call call, Exception e) {
                                     }
-                                }
-                            });
-                    }else {
+
+                                    @Override
+                                    public void onResponse(String response) throws JSONException {
+                                        JSONObject object = new JSONObject(response);
+                                        if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
+                                            JSONObject bean = object.optJSONObject("objValue");
+                                            Intent intent = new Intent(context, WebViewActivity.class);
+                                            intent.putExtra("title", table.getName());
+                                            intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
+                                            intent.putExtra("goChat", true);
+                                            context.startActivity(intent);
+                                        }
+                                    }
+                                });
+                    } else {
                         Intent intent = new Intent(context, WebViewActivity.class);
                         intent.putExtra("title", table.getName());
                         intent.putExtra("URL", urlString);
@@ -310,29 +353,29 @@ public class WorkTableClickDelagate {
                     .getAndroid_access_url())) {
                 try {
                     final String urlString = Constants.URL_OFFICE_HR;
-                    if ("1".equals(table.getIsToken())){
+                    if ("1".equals(table.getIsToken())) {
                         JSONObject object = new JSONObject();
                         object.put("userName", CommConstants.loginConfig.getmUserInfo().getEmpAdname());
                         HttpManager.postJson("http://gzt.jianye.com.cn:80/eoop-api/rest/token/getIsToken",
-                            object.toString(), new StringCallback() {
-                                @Override
-                                public void onError(Call call, Exception e) {
-                                }
-
-                                @Override
-                                public void onResponse(String response) throws JSONException {
-                                    JSONObject object = new JSONObject(response);
-                                    if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
-                                        JSONObject bean = object.optJSONObject("objValue");
-                                        Intent intent = new Intent(context, WebViewActivity.class);
-                                        intent.putExtra("title", table.getName());
-                                        intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
-                                        intent.putExtra("goChat", true);
-                                        context.startActivity(intent);
+                                object.toString(), new StringCallback() {
+                                    @Override
+                                    public void onError(Call call, Exception e) {
                                     }
-                                }
-                            });
-                    }else {
+
+                                    @Override
+                                    public void onResponse(String response) throws JSONException {
+                                        JSONObject object = new JSONObject(response);
+                                        if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
+                                            JSONObject bean = object.optJSONObject("objValue");
+                                            Intent intent = new Intent(context, WebViewActivity.class);
+                                            intent.putExtra("title", table.getName());
+                                            intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
+                                            intent.putExtra("goChat", true);
+                                            context.startActivity(intent);
+                                        }
+                                    }
+                                });
+                    } else {
                         Intent intent = new Intent(context, WebViewActivity.class);
                         intent.putExtra("title", table.getName());
                         intent.putExtra("URL", urlString);
@@ -345,28 +388,28 @@ public class WorkTableClickDelagate {
             } else if ("task".equals(table.getAndroid_access_url())) {
                 try {
                     final String urlString = Constants.URL_OFFICE_TASK;
-                    if ("1".equals(table.getIsToken())){
+                    if ("1".equals(table.getIsToken())) {
                         JSONObject object = new JSONObject();
                         object.put("userName", CommConstants.loginConfig.getmUserInfo().getEmpAdname());
                         HttpManager.postJson("http://gzt.jianye.com.cn:80/eoop-api/rest/token/getToken",
-                            object.toString(), new StringCallback() {
-                                @Override
-                                public void onError(Call call, Exception e) {
-                                }
-
-                                @Override
-                                public void onResponse(String response) throws JSONException {
-                                    JSONObject object = new JSONObject(response);
-                                    if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
-                                        JSONObject bean = object.optJSONObject("objValue");
-                                        Intent intent = new Intent(context, WebViewActivity.class);
-                                        intent.putExtra("title", table.getName());
-                                        intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
-                                        context.startActivity(intent);
+                                object.toString(), new StringCallback() {
+                                    @Override
+                                    public void onError(Call call, Exception e) {
                                     }
-                                }
-                            });
-                    }else {
+
+                                    @Override
+                                    public void onResponse(String response) throws JSONException {
+                                        JSONObject object = new JSONObject(response);
+                                        if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
+                                            JSONObject bean = object.optJSONObject("objValue");
+                                            Intent intent = new Intent(context, WebViewActivity.class);
+                                            intent.putExtra("title", table.getName());
+                                            intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
+                                            context.startActivity(intent);
+                                        }
+                                    }
+                                });
+                    } else {
                         Intent intent = new Intent(context, WebViewActivity.class);
                         intent.putExtra("title", table.getName());
                         intent.putExtra("URL", urlString);
@@ -382,29 +425,29 @@ public class WorkTableClickDelagate {
             } else if ("notice".equals(table.getAndroid_access_url())) {
                 try {
                     final String urlString = Constants.URL_OFFICE_NEWS;
-                    if ("1".equals(table.getIsToken())){
+                    if ("1".equals(table.getIsToken())) {
                         JSONObject object = new JSONObject();
                         object.put("userName", CommConstants.loginConfig.getmUserInfo().getEmpAdname());
                         HttpManager.postJson("http://gzt.jianye.com.cn:80/eoop-api/rest/token/getToken",
-                            object.toString(), new StringCallback() {
-                                @Override
-                                public void onError(Call call, Exception e) {
-                                }
-
-                                @Override
-                                public void onResponse(String response) throws JSONException {
-                                    JSONObject object = new JSONObject(response);
-                                    if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
-                                        JSONObject bean = object.optJSONObject("objValue");
-                                        Intent intent = new Intent(context, WebViewActivity.class);
-                                        intent.putExtra("title", table.getName());
-                                        intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
-                                        intent.putExtra("TITLE", "新闻公告");
-                                        context.startActivity(intent);
+                                object.toString(), new StringCallback() {
+                                    @Override
+                                    public void onError(Call call, Exception e) {
                                     }
-                                }
-                            });
-                    }else {
+
+                                    @Override
+                                    public void onResponse(String response) throws JSONException {
+                                        JSONObject object = new JSONObject(response);
+                                        if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
+                                            JSONObject bean = object.optJSONObject("objValue");
+                                            Intent intent = new Intent(context, WebViewActivity.class);
+                                            intent.putExtra("title", table.getName());
+                                            intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
+                                            intent.putExtra("TITLE", "新闻公告");
+                                            context.startActivity(intent);
+                                        }
+                                    }
+                                });
+                    } else {
                         Intent intent = new Intent(context, WebViewActivity.class);
                         intent.putExtra("title", table.getName());
                         intent.putExtra("URL", urlString);
@@ -417,28 +460,28 @@ public class WorkTableClickDelagate {
             } else if ("shop".equals(table.getAndroid_access_url())) {
                 try {
                     final String urlString = Constants.URL_OFFICE_SHOP;
-                    if ("1".equals(table.getIsToken())){
+                    if ("1".equals(table.getIsToken())) {
                         JSONObject object = new JSONObject();
                         object.put("userName", CommConstants.loginConfig.getmUserInfo().getEmpAdname());
                         HttpManager.postJson("http://gzt.jianye.com.cn:80/eoop-api/rest/token/getToken",
-                            object.toString(), new StringCallback() {
-                                @Override
-                                public void onError(Call call, Exception e) {
-                                }
-
-                                @Override
-                                public void onResponse(String response) throws JSONException {
-                                    JSONObject object = new JSONObject(response);
-                                    if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
-                                        JSONObject bean = object.optJSONObject("objValue");
-                                        Intent intent = new Intent(context, WebViewActivity.class);
-                                        intent.putExtra("title", table.getName());
-                                        intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
-                                        context.startActivity(intent);
+                                object.toString(), new StringCallback() {
+                                    @Override
+                                    public void onError(Call call, Exception e) {
                                     }
-                                }
-                            });
-                    }else {
+
+                                    @Override
+                                    public void onResponse(String response) throws JSONException {
+                                        JSONObject object = new JSONObject(response);
+                                        if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
+                                            JSONObject bean = object.optJSONObject("objValue");
+                                            Intent intent = new Intent(context, WebViewActivity.class);
+                                            intent.putExtra("title", table.getName());
+                                            intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
+                                            context.startActivity(intent);
+                                        }
+                                    }
+                                });
+                    } else {
                         Intent intent = new Intent(context, WebViewActivity.class);
                         intent.putExtra("title", table.getName());
                         intent.putExtra("URL", urlString);
@@ -461,32 +504,33 @@ public class WorkTableClickDelagate {
                                     PackageManager.GET_META_DATA).metaData
                             .getBoolean("CHANNEL_CAS");
                     String ticket = spUtil.getString("ticket");
-                    if (isCas) {casTickets(ticket, table.getAndroid_access_url());
+                    if (isCas) {
+                        casTickets(ticket, table.getAndroid_access_url());
                     } else {
                         final String urlString = table.getAndroid_access_url()
                                 + "?UserID=" + spUtil.getString(CommConstants.EMPADNAME);
-                        if ("1".equals(table.getIsToken())){
+                        if ("1".equals(table.getIsToken())) {
                             JSONObject object = new JSONObject();
                             object.put("userName", CommConstants.loginConfig.getmUserInfo().getEmpAdname());
                             HttpManager.postJson("http://gzt.jianye.com.cn:80/eoop-api/rest/token/getToken",
-                                object.toString(), new StringCallback() {
-                                    @Override
-                                    public void onError(Call call, Exception e) {
-                                    }
-
-                                    @Override
-                                    public void onResponse(String response) throws JSONException {
-                                        JSONObject object = new JSONObject(response);
-                                        if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
-                                            JSONObject bean = object.optJSONObject("objValue");
-                                            Intent intent = new Intent(context, WebViewActivity.class);
-                                            intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
-                                            intent.putExtra("BPM", true);
-                                            context.startActivity(intent);
+                                    object.toString(), new StringCallback() {
+                                        @Override
+                                        public void onError(Call call, Exception e) {
                                         }
-                                    }
-                                });
-                        }else {
+
+                                        @Override
+                                        public void onResponse(String response) throws JSONException {
+                                            JSONObject object = new JSONObject(response);
+                                            if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
+                                                JSONObject bean = object.optJSONObject("objValue");
+                                                Intent intent = new Intent(context, WebViewActivity.class);
+                                                intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
+                                                intent.putExtra("BPM", true);
+                                                context.startActivity(intent);
+                                            }
+                                        }
+                                    });
+                        } else {
                             Intent intent = new Intent(context, WebViewActivity.class);
                             intent.putExtra("URL", urlString);
                             intent.putExtra("BPM", true);
@@ -511,36 +555,36 @@ public class WorkTableClickDelagate {
                     String remark = table.getRemarks();
                     if (!TextUtils.isEmpty(remark)) {
                         urlStringTemp = remark + "/wwwPhone/task/task.html?username=" +
-                            spUtil.getString(CommConstants.EMPADNAME);
+                                spUtil.getString(CommConstants.EMPADNAME);
                     } else {
                         urlStringTemp = "http://task.900950.com:9082/wwwPhone/task/task.html?username=" +
-                            spUtil.getString(CommConstants.EMPADNAME);
+                                spUtil.getString(CommConstants.EMPADNAME);
                     }
                     final String urlString = urlStringTemp;
-                    if ("1".equals(table.getIsToken())){
+                    if ("1".equals(table.getIsToken())) {
                         JSONObject object = new JSONObject();
                         object.put("userName", CommConstants.loginConfig.getmUserInfo().getEmpAdname());
                         HttpManager.postJson("http://gzt.jianye.com.cn:80/eoop-api/rest/token/getToken",
-                            object.toString(), new StringCallback() {
-                                @Override
-                                public void onError(Call call, Exception e) {
-                                }
-
-                                @Override
-                                public void onResponse(String response) throws JSONException {
-                                    JSONObject object = new JSONObject(response);
-                                    if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
-                                        JSONObject bean = object.optJSONObject("objValue");
-                                        Intent intent = new Intent(context, WebViewActivity.class);
-                                        intent.putExtra("title", table.getName());
-                                        intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
-                                        intent.putExtra("FutureLand", true);
-                                        intent.putExtra("WebViewFuncion", true);
-                                        context.startActivity(intent);
+                                object.toString(), new StringCallback() {
+                                    @Override
+                                    public void onError(Call call, Exception e) {
                                     }
-                                }
-                            });
-                    }else {
+
+                                    @Override
+                                    public void onResponse(String response) throws JSONException {
+                                        JSONObject object = new JSONObject(response);
+                                        if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
+                                            JSONObject bean = object.optJSONObject("objValue");
+                                            Intent intent = new Intent(context, WebViewActivity.class);
+                                            intent.putExtra("title", table.getName());
+                                            intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
+                                            intent.putExtra("FutureLand", true);
+                                            intent.putExtra("WebViewFuncion", true);
+                                            context.startActivity(intent);
+                                        }
+                                    }
+                                });
+                    } else {
                         Intent intent = new Intent(context, WebViewActivity.class);
                         intent.putExtra("title", table.getName());
                         intent.putExtra("URL", urlString);
@@ -548,7 +592,7 @@ public class WorkTableClickDelagate {
                         intent.putExtra("WebViewFuncion", true);
                         context.startActivity(intent);
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else if ("futureland_approval".equals(table.getAndroid_access_url())) {// EKP流程审批
@@ -563,30 +607,30 @@ public class WorkTableClickDelagate {
                                 spUtil.getString(CommConstants.EMPADNAME);
                     }
                     final String urlString = urlStringTemp;
-                    if ("1".equals(table.getIsToken())){
+                    if ("1".equals(table.getIsToken())) {
                         JSONObject object = new JSONObject();
                         object.put("userName", CommConstants.loginConfig.getmUserInfo().getEmpAdname());
                         HttpManager.postJson("http://gzt.jianye.com.cn:80/eoop-api/rest/token/getToken",
-                            object.toString(), new StringCallback() {
-                                @Override
-                                public void onError(Call call, Exception e) {
-                                }
-
-                                @Override
-                                public void onResponse(String response) throws JSONException {
-                                    JSONObject object = new JSONObject(response);
-                                    if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
-                                        JSONObject bean = object.optJSONObject("objValue");
-                                        Intent intent = new Intent(context, WebViewActivity.class);
-                                        intent.putExtra("title", table.getName());
-                                        intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
-                                        intent.putExtra("FutureLand", true);
-                                        intent.putExtra("WebViewFuncion", true);
-                                        context.startActivity(intent);
+                                object.toString(), new StringCallback() {
+                                    @Override
+                                    public void onError(Call call, Exception e) {
                                     }
-                                }
-                            });
-                    }else {
+
+                                    @Override
+                                    public void onResponse(String response) throws JSONException {
+                                        JSONObject object = new JSONObject(response);
+                                        if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
+                                            JSONObject bean = object.optJSONObject("objValue");
+                                            Intent intent = new Intent(context, WebViewActivity.class);
+                                            intent.putExtra("title", table.getName());
+                                            intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
+                                            intent.putExtra("FutureLand", true);
+                                            intent.putExtra("WebViewFuncion", true);
+                                            context.startActivity(intent);
+                                        }
+                                    }
+                                });
+                    } else {
                         Intent intent = new Intent(context, WebViewActivity.class);
                         intent.putExtra("title", table.getName());
                         intent.putExtra("URL", urlString);
@@ -594,8 +638,7 @@ public class WorkTableClickDelagate {
                         intent.putExtra("WebViewFuncion", true);
                         context.startActivity(intent);
                     }
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -622,30 +665,30 @@ public class WorkTableClickDelagate {
                                 spUtil.getString(CommConstants.EMPADNAME);
                     }
                     final String urlString = urlStringTemp;
-                    if ("1".equals(table.getIsToken())){
+                    if ("1".equals(table.getIsToken())) {
                         JSONObject object = new JSONObject();
                         object.put("userName", CommConstants.loginConfig.getmUserInfo().getEmpAdname());
                         HttpManager.postJson("http://gzt.jianye.com.cn:80/eoop-api/rest/token/getToken",
-                            object.toString(), new StringCallback() {
-                                @Override
-                                public void onError(Call call, Exception e) {
-                                }
-
-                                @Override
-                                public void onResponse(String response) throws JSONException {
-                                    JSONObject object = new JSONObject(response);
-                                    if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
-                                        JSONObject bean = object.optJSONObject("objValue");
-                                        Intent intent = new Intent(context, WebViewActivity.class);
-                                        intent.putExtra("title", table.getName());
-                                        intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
-                                        intent.putExtra("FutureLand", true);
-                                        intent.putExtra("WebViewFuncion", true);
-                                        context.startActivity(intent);
+                                object.toString(), new StringCallback() {
+                                    @Override
+                                    public void onError(Call call, Exception e) {
                                     }
-                                }
-                            });
-                    }else {
+
+                                    @Override
+                                    public void onResponse(String response) throws JSONException {
+                                        JSONObject object = new JSONObject(response);
+                                        if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
+                                            JSONObject bean = object.optJSONObject("objValue");
+                                            Intent intent = new Intent(context, WebViewActivity.class);
+                                            intent.putExtra("title", table.getName());
+                                            intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
+                                            intent.putExtra("FutureLand", true);
+                                            intent.putExtra("WebViewFuncion", true);
+                                            context.startActivity(intent);
+                                        }
+                                    }
+                                });
+                    } else {
                         Intent intent = new Intent(context, WebViewActivity.class);
                         intent.putExtra("title", table.getName());
                         intent.putExtra("URL", urlString);
@@ -669,30 +712,30 @@ public class WorkTableClickDelagate {
                                 spUtil.getString(CommConstants.EMPADNAME);
                     }
                     final String urlString = urlStringTemp;
-                    if ("1".equals(table.getIsToken())){
+                    if ("1".equals(table.getIsToken())) {
                         JSONObject object = new JSONObject();
                         object.put("userName", CommConstants.loginConfig.getmUserInfo().getEmpAdname());
                         HttpManager.postJson("http://gzt.jianye.com.cn:80/eoop-api/rest/token/getToken",
-                            object.toString(), new StringCallback() {
-                                @Override
-                                public void onError(Call call, Exception e) {
-                                }
-
-                                @Override
-                                public void onResponse(String response) throws JSONException {
-                                    JSONObject object = new JSONObject(response);
-                                    if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
-                                        JSONObject bean = object.optJSONObject("objValue");
-                                        Intent intent = new Intent(context, WebViewActivity.class);
-                                        intent.putExtra("title", table.getName());
-                                        intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
-                                        intent.putExtra("FutureLand", true);
-                                        intent.putExtra("WebViewFuncion", true);
-                                        context.startActivity(intent);
+                                object.toString(), new StringCallback() {
+                                    @Override
+                                    public void onError(Call call, Exception e) {
                                     }
-                                }
-                            });
-                    }else {
+
+                                    @Override
+                                    public void onResponse(String response) throws JSONException {
+                                        JSONObject object = new JSONObject(response);
+                                        if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
+                                            JSONObject bean = object.optJSONObject("objValue");
+                                            Intent intent = new Intent(context, WebViewActivity.class);
+                                            intent.putExtra("title", table.getName());
+                                            intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
+                                            intent.putExtra("FutureLand", true);
+                                            intent.putExtra("WebViewFuncion", true);
+                                            context.startActivity(intent);
+                                        }
+                                    }
+                                });
+                    } else {
                         Intent intent = new Intent(context, WebViewActivity.class);
                         intent.putExtra("title", table.getName());
                         intent.putExtra("URL", urlString);
@@ -700,7 +743,7 @@ public class WorkTableClickDelagate {
                         intent.putExtra("WebViewFuncion", true);
                         context.startActivity(intent);
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else if ("futureland_topReport".equals(table.getAndroid_access_url())) {// Top报表
@@ -709,36 +752,36 @@ public class WorkTableClickDelagate {
                     String remark = table.getRemarks();
                     if (!TextUtils.isEmpty(remark)) {
                         urlStringTemp = remark + "/eoop/www/frontPage.html?username=" +
-                            spUtil.getString(CommConstants.EMPADNAME);
+                                spUtil.getString(CommConstants.EMPADNAME);
                     } else {
                         urlStringTemp = "http://" + CommConstants.URL_API + CommConstants.HOST_PORT + "/eoop/www/frontPage.html?username=" +
-                            spUtil.getString(CommConstants.EMPADNAME);
+                                spUtil.getString(CommConstants.EMPADNAME);
                     }
                     final String urlString = urlStringTemp;
-                    if ("1".equals(table.getIsToken())){
+                    if ("1".equals(table.getIsToken())) {
                         JSONObject object = new JSONObject();
                         object.put("userName", CommConstants.loginConfig.getmUserInfo().getEmpAdname());
                         HttpManager.postJson("http://gzt.jianye.com.cn:80/eoop-api/rest/token/getToken",
-                            object.toString(), new StringCallback() {
-                                @Override
-                                public void onError(Call call, Exception e) {
-                                }
-
-                                @Override
-                                public void onResponse(String response) throws JSONException {
-                                    JSONObject object = new JSONObject(response);
-                                    if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
-                                        JSONObject bean = object.optJSONObject("objValue");
-                                        Intent intent = new Intent(context, WebViewActivity.class);
-                                        intent.putExtra("title", table.getName());
-                                        intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
-                                        intent.putExtra("FutureLand", true);
-                                        intent.putExtra("WebViewFuncion", true);
-                                        context.startActivity(intent);
+                                object.toString(), new StringCallback() {
+                                    @Override
+                                    public void onError(Call call, Exception e) {
                                     }
-                                }
-                            });
-                    }else {
+
+                                    @Override
+                                    public void onResponse(String response) throws JSONException {
+                                        JSONObject object = new JSONObject(response);
+                                        if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
+                                            JSONObject bean = object.optJSONObject("objValue");
+                                            Intent intent = new Intent(context, WebViewActivity.class);
+                                            intent.putExtra("title", table.getName());
+                                            intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
+                                            intent.putExtra("FutureLand", true);
+                                            intent.putExtra("WebViewFuncion", true);
+                                            context.startActivity(intent);
+                                        }
+                                    }
+                                });
+                    } else {
                         Intent intent = new Intent(context, WebViewActivity.class);
                         intent.putExtra("title", table.getName());
                         intent.putExtra("URL", urlString);
@@ -746,7 +789,7 @@ public class WorkTableClickDelagate {
                         intent.putExtra("WebViewFuncion", true);
                         context.startActivity(intent);
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else if ("futureland_news".equals(table.getAndroid_access_url())) {// 信息中心
@@ -755,36 +798,36 @@ public class WorkTableClickDelagate {
                     String remark = table.getRemarks();
                     if (!TextUtils.isEmpty(remark)) {
                         urlStringTemp = remark + "/eoop/wwwPhone/news/informationCenter.html?username=" +
-                            spUtil.getString(CommConstants.EMPADNAME);
+                                spUtil.getString(CommConstants.EMPADNAME);
                     } else {
                         urlStringTemp = "http://" + CommConstants.URL_API + CommConstants.HOST_PORT + "/eoop/wwwPhone/news/informationCenter.html?username=" +
-                            spUtil.getString(CommConstants.EMPADNAME);
+                                spUtil.getString(CommConstants.EMPADNAME);
                     }
                     final String urlString = urlStringTemp;
-                    if ("1".equals(table.getIsToken())){
+                    if ("1".equals(table.getIsToken())) {
                         JSONObject object = new JSONObject();
                         object.put("userName", CommConstants.loginConfig.getmUserInfo().getEmpAdname());
                         HttpManager.postJson("http://gzt.jianye.com.cn:80/eoop-api/rest/token/getToken",
-                            object.toString(), new StringCallback() {
-                                @Override
-                                public void onError(Call call, Exception e) {
-                                }
-
-                                @Override
-                                public void onResponse(String response) throws JSONException {
-                                    JSONObject object = new JSONObject(response);
-                                    if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
-                                        JSONObject bean = object.optJSONObject("objValue");
-                                        Intent intent = new Intent(context, WebViewActivity.class);
-                                        intent.putExtra("title", table.getName());
-                                        intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
-                                        intent.putExtra("FutureLand", true);
-                                        intent.putExtra("WebViewFuncion", true);
-                                        context.startActivity(intent);
+                                object.toString(), new StringCallback() {
+                                    @Override
+                                    public void onError(Call call, Exception e) {
                                     }
-                                }
-                            });
-                    }else {
+
+                                    @Override
+                                    public void onResponse(String response) throws JSONException {
+                                        JSONObject object = new JSONObject(response);
+                                        if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
+                                            JSONObject bean = object.optJSONObject("objValue");
+                                            Intent intent = new Intent(context, WebViewActivity.class);
+                                            intent.putExtra("title", table.getName());
+                                            intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
+                                            intent.putExtra("FutureLand", true);
+                                            intent.putExtra("WebViewFuncion", true);
+                                            context.startActivity(intent);
+                                        }
+                                    }
+                                });
+                    } else {
                         Intent intent = new Intent(context, WebViewActivity.class);
                         intent.putExtra("title", table.getName());
                         intent.putExtra("URL", urlString);
@@ -792,7 +835,7 @@ public class WorkTableClickDelagate {
                         intent.putExtra("WebViewFuncion", true);
                         context.startActivity(intent);
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else if ("futureland_dailyReport".equals(table.getAndroid_access_url())) {// 地产报表
@@ -801,36 +844,36 @@ public class WorkTableClickDelagate {
                     String remark = table.getRemarks();
                     if (!TextUtils.isEmpty(remark)) {
                         urlStringTemp = remark + "/wwwPhone/sms/msgList.html?username=" +
-                            spUtil.getString(CommConstants.EMPADNAME);
+                                spUtil.getString(CommConstants.EMPADNAME);
                     } else {
                         urlStringTemp = "http://task.900950.com:9082/wwwPhone/sms/msgList.html?username=" +
-                            spUtil.getString(CommConstants.EMPADNAME);
+                                spUtil.getString(CommConstants.EMPADNAME);
                     }
                     final String urlString = urlStringTemp;
-                    if ("1".equals(table.getIsToken())){
+                    if ("1".equals(table.getIsToken())) {
                         JSONObject object = new JSONObject();
                         object.put("userName", CommConstants.loginConfig.getmUserInfo().getEmpAdname());
                         HttpManager.postJson("http://gzt.jianye.com.cn:80/eoop-api/rest/token/getToken",
-                            object.toString(), new StringCallback() {
-                                @Override
-                                public void onError(Call call, Exception e) {
-                                }
-
-                                @Override
-                                public void onResponse(String response) throws JSONException {
-                                    JSONObject object = new JSONObject(response);
-                                    if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
-                                        JSONObject bean = object.optJSONObject("objValue");
-                                        Intent intent = new Intent(context, WebViewActivity.class);
-                                        intent.putExtra("title", table.getName());
-                                        intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
-                                        intent.putExtra("FutureLand", true);
-                                        intent.putExtra("WebViewFuncion", true);
-                                        context.startActivity(intent);
+                                object.toString(), new StringCallback() {
+                                    @Override
+                                    public void onError(Call call, Exception e) {
                                     }
-                                }
-                            });
-                    }else {
+
+                                    @Override
+                                    public void onResponse(String response) throws JSONException {
+                                        JSONObject object = new JSONObject(response);
+                                        if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
+                                            JSONObject bean = object.optJSONObject("objValue");
+                                            Intent intent = new Intent(context, WebViewActivity.class);
+                                            intent.putExtra("title", table.getName());
+                                            intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
+                                            intent.putExtra("FutureLand", true);
+                                            intent.putExtra("WebViewFuncion", true);
+                                            context.startActivity(intent);
+                                        }
+                                    }
+                                });
+                    } else {
                         Intent intent = new Intent(context, WebViewActivity.class);
                         intent.putExtra("title", table.getName());
                         intent.putExtra("URL", urlString);
@@ -838,7 +881,7 @@ public class WorkTableClickDelagate {
                         intent.putExtra("WebViewFuncion", true);
                         context.startActivity(intent);
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else if ("schedule-task".equals(table.getAndroid_access_url())) {// 计划任务
@@ -854,36 +897,36 @@ public class WorkTableClickDelagate {
                         urlStringTemp = String.format(CommConstants.URL_SCHEDULE_TASK, userName, key);
                     }
                     final String urlString = urlStringTemp;
-                    if ("1".equals(table.getIsToken())){
+                    if ("1".equals(table.getIsToken())) {
                         JSONObject object = new JSONObject();
                         object.put("userName", CommConstants.loginConfig.getmUserInfo().getEmpAdname());
                         HttpManager.postJson("http://gzt.jianye.com.cn:80/eoop-api/rest/token/getToken",
-                            object.toString(), new StringCallback() {
-                                @Override
-                                public void onError(Call call, Exception e) {
-                                }
-
-                                @Override
-                                public void onResponse(String response) throws JSONException {
-                                    JSONObject object = new JSONObject(response);
-                                    if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
-                                        JSONObject bean = object.optJSONObject("objValue");
-                                        Intent intent = new Intent(context, WebViewActivity.class);
-                                        intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
-                                        intent.putExtra("FutureLand", true);
-                                        intent.putExtra("WebViewFuncion", true);
-                                        context.startActivity(intent);
+                                object.toString(), new StringCallback() {
+                                    @Override
+                                    public void onError(Call call, Exception e) {
                                     }
-                                }
-                            });
-                    }else {
+
+                                    @Override
+                                    public void onResponse(String response) throws JSONException {
+                                        JSONObject object = new JSONObject(response);
+                                        if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
+                                            JSONObject bean = object.optJSONObject("objValue");
+                                            Intent intent = new Intent(context, WebViewActivity.class);
+                                            intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
+                                            intent.putExtra("FutureLand", true);
+                                            intent.putExtra("WebViewFuncion", true);
+                                            context.startActivity(intent);
+                                        }
+                                    }
+                                });
+                    } else {
                         Intent intent = new Intent(context, WebViewActivity.class);
                         intent.putExtra("URL", urlString);
                         intent.putExtra("FutureLand", true);
                         intent.putExtra("WebViewFuncion", true);
                         context.startActivity(intent);
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             } else if ("mingyuan".equals(table.getAndroid_access_url())) {// 新明源流程审批
@@ -899,28 +942,28 @@ public class WorkTableClickDelagate {
                                 + arg;
                     }
                     final String urlString = urlStringTemp;
-                    if ("1".equals(table.getIsToken())){
+                    if ("1".equals(table.getIsToken())) {
                         JSONObject object = new JSONObject();
                         object.put("userName", CommConstants.loginConfig.getmUserInfo().getEmpAdname());
                         HttpManager.postJson("http://gzt.jianye.com.cn:80/eoop-api/rest/token/getToken",
-                            object.toString(), new StringCallback() {
-                                @Override
-                                public void onError(Call call, Exception e) {
-                                }
-
-                                @Override
-                                public void onResponse(String response) throws JSONException {
-                                    JSONObject object = new JSONObject(response);
-                                    if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
-                                        JSONObject bean = object.optJSONObject("objValue");
-                                        Intent intent = new Intent(context, WebViewActivity.class);
-                                        intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
-                                        intent.putExtra("title", table.getName());
-                                        context.startActivity(intent);
+                                object.toString(), new StringCallback() {
+                                    @Override
+                                    public void onError(Call call, Exception e) {
                                     }
-                                }
-                            });
-                    }else {
+
+                                    @Override
+                                    public void onResponse(String response) throws JSONException {
+                                        JSONObject object = new JSONObject(response);
+                                        if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
+                                            JSONObject bean = object.optJSONObject("objValue");
+                                            Intent intent = new Intent(context, WebViewActivity.class);
+                                            intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
+                                            intent.putExtra("title", table.getName());
+                                            context.startActivity(intent);
+                                        }
+                                    }
+                                });
+                    } else {
                         Intent intent = new Intent(context, WebViewActivity.class);
                         intent.putExtra("URL", urlString);
                         intent.putExtra("title", table.getName());
@@ -936,34 +979,34 @@ public class WorkTableClickDelagate {
                     String remark = table.getRemarks();
                     if (!TextUtils.isEmpty(remark)) {
                         urlStringTemp = remark + "/feature-list.html?userGUID=" +
-                            spUtil.getString(CommConstants.EMPADNAME);
+                                spUtil.getString(CommConstants.EMPADNAME);
                     } else {
                         urlStringTemp = "http://61.132.109.12:9081/feature-list.html?userGUID=" +
-                            spUtil.getString(CommConstants.EMPADNAME);
+                                spUtil.getString(CommConstants.EMPADNAME);
                     }
                     final String urlString = urlStringTemp;
-                    if ("1".equals(table.getIsToken())){
+                    if ("1".equals(table.getIsToken())) {
                         JSONObject object = new JSONObject();
                         object.put("userName", CommConstants.loginConfig.getmUserInfo().getEmpAdname());
                         HttpManager.postJson("http://gzt.jianye.com.cn:80/eoop-api/rest/token/getToken",
-                            object.toString(), new StringCallback() {
-                                @Override
-                                public void onError(Call call, Exception e) {
-                                }
-
-                                @Override
-                                public void onResponse(String response) throws JSONException {
-                                    JSONObject object = new JSONObject(response);
-                                    if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
-                                        JSONObject bean = object.optJSONObject("objValue");
-                                        Intent intent = new Intent(context, WebViewActivity.class);
-                                        intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
-                                        intent.putExtra("title", table.getName());
-                                        context.startActivity(intent);
+                                object.toString(), new StringCallback() {
+                                    @Override
+                                    public void onError(Call call, Exception e) {
                                     }
-                                }
-                            });
-                    }else {
+
+                                    @Override
+                                    public void onResponse(String response) throws JSONException {
+                                        JSONObject object = new JSONObject(response);
+                                        if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
+                                            JSONObject bean = object.optJSONObject("objValue");
+                                            Intent intent = new Intent(context, WebViewActivity.class);
+                                            intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
+                                            intent.putExtra("title", table.getName());
+                                            context.startActivity(intent);
+                                        }
+                                    }
+                                });
+                    } else {
                         Intent intent = new Intent(context, WebViewActivity.class);
                         intent.putExtra("URL", urlString);
                         intent.putExtra("title", table.getName());
@@ -981,34 +1024,34 @@ public class WorkTableClickDelagate {
                     String remark = table.getRemarks();
                     if (!TextUtils.isEmpty(remark)) {
                         urlStringTemp = remark + "/H5/main.html?UserId=" +
-                            spUtil.getString(CommConstants.EMPADNAME);
+                                spUtil.getString(CommConstants.EMPADNAME);
                     } else {
                         urlStringTemp = "http://hhr.xincheng.com:8061/H5/main.html?UserId" +
-                            spUtil.getString(CommConstants.EMPADNAME);
+                                spUtil.getString(CommConstants.EMPADNAME);
                     }
                     final String urlString = urlStringTemp;
-                    if ("1".equals(table.getIsToken())){
+                    if ("1".equals(table.getIsToken())) {
                         JSONObject object = new JSONObject();
                         object.put("userName", CommConstants.loginConfig.getmUserInfo().getEmpAdname());
                         HttpManager.postJson("http://gzt.jianye.com.cn:80/eoop-api/rest/token/getToken",
-                            object.toString(), new StringCallback() {
-                                @Override
-                                public void onError(Call call, Exception e) {
-                                }
-
-                                @Override
-                                public void onResponse(String response) throws JSONException {
-                                    JSONObject object = new JSONObject(response);
-                                    if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
-                                        JSONObject bean = object.optJSONObject("objValue");
-                                        Intent intent = new Intent(context, WebViewActivity.class);
-                                        intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
-                                        intent.putExtra("FutureLand", true);
-                                        context.startActivity(intent);
+                                object.toString(), new StringCallback() {
+                                    @Override
+                                    public void onError(Call call, Exception e) {
                                     }
-                                }
-                            });
-                    }else {
+
+                                    @Override
+                                    public void onResponse(String response) throws JSONException {
+                                        JSONObject object = new JSONObject(response);
+                                        if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
+                                            JSONObject bean = object.optJSONObject("objValue");
+                                            Intent intent = new Intent(context, WebViewActivity.class);
+                                            intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
+                                            intent.putExtra("FutureLand", true);
+                                            context.startActivity(intent);
+                                        }
+                                    }
+                                });
+                    } else {
                         Intent intent = new Intent(context, WebViewActivity.class);
                         intent.putExtra("URL", urlString);
                         intent.putExtra("FutureLand", true);
@@ -1024,34 +1067,34 @@ public class WorkTableClickDelagate {
                     String remark = table.getRemarks();
                     if (!TextUtils.isEmpty(remark)) {
                         urlStringTemp = remark + "/RwdbH5/index?username=" +
-                            spUtil.getString(CommConstants.EMPADNAME);
+                                spUtil.getString(CommConstants.EMPADNAME);
                     } else {
                         urlStringTemp = "http://211.147.69.208:8012/RWDB/RwdbH5/index?username=" +
-                            spUtil.getString(CommConstants.EMPADNAME);
+                                spUtil.getString(CommConstants.EMPADNAME);
                     }
                     final String urlString = urlStringTemp;
-                    if ("1".equals(table.getIsToken())){
+                    if ("1".equals(table.getIsToken())) {
                         JSONObject object = new JSONObject();
                         object.put("userName", CommConstants.loginConfig.getmUserInfo().getEmpAdname());
                         HttpManager.postJson("http://gzt.jianye.com.cn:80/eoop-api/rest/token/getToken",
-                            object.toString(), new StringCallback() {
-                                @Override
-                                public void onError(Call call, Exception e) {
-                                }
-
-                                @Override
-                                public void onResponse(String response) throws JSONException {
-                                    JSONObject object = new JSONObject(response);
-                                    if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
-                                        JSONObject bean = object.optJSONObject("objValue");
-                                        Intent intent = new Intent(context, WebViewActivity.class);
-                                        intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
-                                        intent.putExtra("title", table.getName());
-                                        context.startActivity(intent);
+                                object.toString(), new StringCallback() {
+                                    @Override
+                                    public void onError(Call call, Exception e) {
                                     }
-                                }
-                            });
-                    }else {
+
+                                    @Override
+                                    public void onResponse(String response) throws JSONException {
+                                        JSONObject object = new JSONObject(response);
+                                        if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
+                                            JSONObject bean = object.optJSONObject("objValue");
+                                            Intent intent = new Intent(context, WebViewActivity.class);
+                                            intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
+                                            intent.putExtra("title", table.getName());
+                                            context.startActivity(intent);
+                                        }
+                                    }
+                                });
+                    } else {
                         Intent intent = new Intent(context, WebViewActivity.class);
                         intent.putExtra("URL", urlString);
                         intent.putExtra("title", table.getName());
@@ -1063,28 +1106,28 @@ public class WorkTableClickDelagate {
             } else {
                 try {
                     final String urlString = table.getAndroid_access_url();
-                    if ("1".equals(table.getIsToken())){
+                    if ("1".equals(table.getIsToken())) {
                         JSONObject object = new JSONObject();
                         object.put("userName", CommConstants.loginConfig.getmUserInfo().getEmpAdname());
                         HttpManager.postJson("http://gzt.jianye.com.cn:80/eoop-api/rest/token/getToken",
-                            object.toString(), new StringCallback() {
-                                @Override
-                                public void onError(Call call, Exception e) {
-                                }
-
-                                @Override
-                                public void onResponse(String response) throws JSONException {
-                                    JSONObject object = new JSONObject(response);
-                                    if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
-                                        JSONObject bean = object.optJSONObject("objValue");
-                                        Intent intent = new Intent(context, WebViewActivity.class);
-                                        intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
-                                        intent.putExtra("title", table.getName());
-                                        context.startActivity(intent);
+                                object.toString(), new StringCallback() {
+                                    @Override
+                                    public void onError(Call call, Exception e) {
                                     }
-                                }
-                            });
-                    }else {
+
+                                    @Override
+                                    public void onResponse(String response) throws JSONException {
+                                        JSONObject object = new JSONObject(response);
+                                        if (object.optBoolean("ok") && object.optJSONObject("objValue") != null) {
+                                            JSONObject bean = object.optJSONObject("objValue");
+                                            Intent intent = new Intent(context, WebViewActivity.class);
+                                            intent.putExtra("URL", urlString + "Token=" + bean.optString("Token"));
+                                            intent.putExtra("title", table.getName());
+                                            context.startActivity(intent);
+                                        }
+                                    }
+                                });
+                    } else {
                         Intent intent = new Intent(context, WebViewActivity.class);
                         intent.putExtra("URL", urlString);
                         intent.putExtra("title", table.getName());
@@ -1150,7 +1193,7 @@ public class WorkTableClickDelagate {
         final String remark = table.getRemarks();
         String url;
         if (!TextUtils.isEmpty(remark)) {
-            url ="http://61.136.122.245:8075/WebReport/ReportServer?op=fs_load&cmd=sso&fr_username=%1$s&fr_password=%2$s";
+            url = "http://61.136.122.245:8075/WebReport/ReportServer?op=fs_load&cmd=sso&fr_username=%1$s&fr_password=%2$s";
         } else {
             url = "http://10.0.2.17:8080/BI/ReportServer?op=fs_load&cmd=sso&fr_username=%1$s&fr_password=%2$s";
         }
@@ -1216,11 +1259,11 @@ public class WorkTableClickDelagate {
         JSONObject object = new JSONObject();
         JSONObject req = new JSONObject();
         try {
-             url = CommConstants.URL_WORK_EMAIL;
+            url = CommConstants.URL_WORK_EMAIL;
             if ("jianye_qyyx".equals(workTable.getAndroid_access_url())) {
                 object.put("userName", spUtil.getString(CommConstants.EMPADNAME));
                 object.put("password", spUtil.getString(CommConstants.PASSWORD));
-            }else {
+            } else {
                 url = CommConstants.URL_WORK_TABLE;
                 object.put("token", token);
                 object.put("moduleId", moduleId);
@@ -1253,9 +1296,9 @@ public class WorkTableClickDelagate {
                         String targetUrl = objValue.getString("targetUrl");
                         if ("futureland_fanruan".equals(workTable.getAndroid_access_url())) {
                             frLogin(workTable, spUtil.getString(CommConstants.EMPADNAME), spUtil.getString(CommConstants.PASSWORD), true, targetUrl);
-                        }else {
+                        } else {
                             Intent intent = new Intent(context, WebViewActivity.class);
-                            if ("jianye_dbsx".equals(workTable.getAndroid_access_url())){
+                            if ("jianye_dbsx".equals(workTable.getAndroid_access_url())) {
                                 intent.putExtra("jianye_dbsx", "jianye_dbsx");
                             }
                             if ("1".equals(workTable.getIsToken())) {

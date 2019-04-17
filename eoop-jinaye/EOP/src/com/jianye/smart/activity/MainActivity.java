@@ -559,5 +559,11 @@ public class MainActivity extends BaseActivity implements TimerHelper.CallBack, 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         chatRecordsFragment.onActivityResult(requestCode,resultCode,data);
+        switch (requestCode) {
+            case 1:
+                if (resultCode==RESULT_OK) {
+                    Toast.makeText(this,data.getStringExtra("siitresult"),Toast.LENGTH_SHORT).show();
+                }
+        }
     }
 }

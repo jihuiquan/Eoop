@@ -11,15 +11,18 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
-import cn.com.xc.sdk.widget.tablayout.indicator.CircleIndicator;
-import com.movit.platform.framework.view.CusGridView;
+
 import com.jianye.smart.R;
 import com.jianye.smart.module.workbench.manager.WorkTableClickDelagate;
 import com.jianye.smart.module.workbench.model.WorkTable;
+import com.movit.platform.framework.view.CusGridView;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import cn.com.xc.sdk.widget.tablayout.indicator.CircleIndicator;
 
 public class EopHomePagerAdapter extends PagerAdapter {
 
