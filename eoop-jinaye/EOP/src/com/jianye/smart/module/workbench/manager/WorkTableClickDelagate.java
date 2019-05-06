@@ -246,7 +246,11 @@ public class WorkTableClickDelagate {
                                             MainActivity activity = (MainActivity) context;
                                             activity.startActivityForResult(intent, 1);
                                         } else {
-                                            Toast.makeText(context, "请下载最新版国信影像云", Toast.LENGTH_SHORT).show();
+                                            Intent webIntent = new Intent(context,
+                                                    WebViewActivity.class);
+                                            webIntent.putExtra("URL", table.getAndroid_access_url());
+                                            webIntent.putExtra("title", "国信影像云下载");
+                                            context.startActivity(webIntent);
                                         }
                                     }
                                 }
