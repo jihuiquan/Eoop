@@ -22,6 +22,7 @@ import android.widget.ProgressBar;
 
 import com.jianye.smart.R;
 import com.jianye.smart.activity.MainActivity;
+import com.jianye.smart.module.qrcode.MyCodeActivity;
 import com.jianye.smart.module.workbench.activity.WebViewActivity;
 import com.movit.platform.common.constants.CommConstants;
 import com.movit.platform.common.okhttp.utils.AesUtils;
@@ -45,6 +46,7 @@ import java.util.List;
 import java.util.UUID;
 
 import okhttp3.Call;
+import okhttp3.MediaType;
 import okhttp3.Response;
 
 @SuppressLint("ValidFragment")
@@ -79,99 +81,48 @@ public class HomeBannerFragment extends Fragment {
         webview.setWebViewClient(new WebViewClient());
         final String cookieUrl = "http://61.136.122.245:8075/WebReport/ReportServer?op=fs_load&cmd=sso&fr_username=" + CommConstants.loginConfig.getmUserInfo().getEmpAdname()
                 + "&fr_password=" + CommConstants.loginConfig.getPassword() + "&fr_remember=true";
-        String s = "https://gzt.jianye.com.cn:20799/eoop-api/r/token/getDivisionTokenUrl?userName=" + MFSPHelper.getString(CommConstants.USERNAME).toLowerCase() + "&divisionUrl=" + url;
-        String json = "{\"userName\":" + MFSPHelper.getString(CommConstants.USERNAME) + ",\"divisionUrl\":" + url + "}";
         JSONObject object = new JSONObject();
         try {
-            object.put("userName", AesUtils.getInstance().encrypt(MFSPHelper.getString(CommConstants.USERNAME)));
-            object.put("divisionUrl", AesUtils.getInstance().encrypt(url));
+            object.put("userName", MFSPHelper.getString(CommConstants.USERNAME).toUpperCase());
+            object.put("divisionUrl", url);
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        String s1 = object.toString();
-        HttpManager.postJson("https:/gzt.jianye.com.cn:20799/eoop-api/r/token/getDivisionTokenUrl", s1, new StringCallback() {
-            @Override
-            public void onError(Call call, Exception e) {
-                Log.d(TAG, "onError() called with: call = [" + call + "], e = [" + e + "]");
-            }
+        com.alibaba.fastjson.JSONObject secretMsg = new com.alibaba.fastjson.JSONObject();
+        secretMsg.put("secretMsg", AesUtils.getInstance().encrypt(object.toString()));
 
-            @Override
-            public void onResponse(String response) throws JSONException {
-                Log.d(TAG, "onResponse() called with: response = [" + response + "]");
-            }
-        });
+        HttpManager.postJson("https://gzt.jianye.com.cn:20799/eoop-api/r/token/getDivisionTokenUrl",
+                secretMsg.toString(), new StringCallback() {
 
-        String userName = MFSPHelper.getString(CommConstants.EMPADNAME);
-
-        StringBuffer sb = new StringBuffer();
-        sb.append("userName=").append(userName);
-        sb.append("&").append("divisionUrl=").append(AesUtils.getInstance().encrypt(url));
-
-        OkHttpUtils
-                .getWithToken()
-                .url("https:/gzt.jianye.com.cn:20799/eoop-api/r/token/getDivisionTokenUrl?" + sb.toString())
-                .build()
-                .execute(new StringCallback() {
 
                     @Override
-                    public void onError(Call call, Exception e) {
-                        Log.d(TAG, "onError() called with: call = [" + call + "], e = [" + e + "]");
+                    public void onError(okhttp3.Call call, Exception e) {
                     }
 
                     @Override
-                    public void onResponse(String response) {
+                    public void onResponse(String response) throws JSONException {
                         Log.d(TAG, "onResponse() called with: response = [" + response + "]");
+                        JSONObject object = new JSONObject(response);
+                        if (object.optBoolean("ok")) {
+                            final String value = object.getString("value");
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+//                                    syncCookie(value, new SharedPreUtils(getActivity()).getString(cookieUrl));
+                                    webview.loadUrl(value);
+                                }
+                            });
+
+                        }
                     }
                 });
 
-//        OkHttpUtils
-//                .postStringWithToken()
-//                .url(s
-//                )
-//                .build()
-//                .execute(new Callback() {
-//                    @Override
-//                    public Object parseNetworkResponse(Response response) throws Exception {
-//                        Log.d(TAG, "parseNetworkResponse() called with: response = [" + response + "]");
-//                        return null;
-//                    }
-//
-//                    @Override
-//                    public void onError(Call call, Exception e) {
-//                        Log.d(TAG, "onError() called with: call = [" + call + "], e = [" + e + "]");
-//                    }
-//
-//                    @Override
-//                    public void onResponse(Object response) throws JSONException {
-//                        Log.d(TAG, "onResponse() called with: response = [" + response + "]");
-//                    }
-//                });
-//        OkHttpUtils.postString().url(s
-//        )
-//                .build().execute(new Callback() {
-//
-//            @Override
-//            public Object parseNetworkResponse(Response response) throws Exception {
-//                Log.d(TAG, "parseNetworkResponse() called with: response = [" + response + "]");
-//                return null;
-//            }
-//
-//            @Override
-//            public void onError(Call call, Exception e) {
-//                Log.d(TAG, "onError() called with: call = [" + call + "], e = [" + e + "]");
-//            }
-//
-//            @Override
-//            public void onResponse(Object response) throws org.json.JSONException {
-//                Log.d(TAG, "onResponse() called with: response = [" + response + "]");
-//            }
-//        });
         webview.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 prg.setProgress(newProgress);
-                if (newProgress == 100) {
-                    prg.setVisibility(View.GONE);
+                if (newProgress >= 95) {
+                    webview.setVisibility(View.VISIBLE);
                 }
             }
 
@@ -194,8 +145,6 @@ public class HomeBannerFragment extends Fragment {
                 return super.onConsoleMessage(consoleMessage);
             }
         });
-        syncCookie(url, new SharedPreUtils(getActivity()).getString(cookieUrl));
-        webview.loadUrl(url);
         return view;
     }
 
