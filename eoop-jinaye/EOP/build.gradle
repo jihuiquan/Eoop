@@ -74,7 +74,7 @@ android {
     defaultConfig {
         applicationId 'com.jianye.smart'
         minSdkVersion 15
-        targetSdkVersion 25
+        targetSdkVersion 23
 
         // dex突破65535的限制
         multiDexEnabled true

@@ -33,6 +33,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.DownloadListener;
+import android.webkit.GeolocationPermissions;
 import android.webkit.JavascriptInterface;
 import android.webkit.SslErrorHandler;
 import android.webkit.ValueCallback;
@@ -51,6 +52,7 @@ import android.widget.RadioGroup.OnCheckedChangeListener;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.jianye.smart.R;
@@ -77,6 +79,7 @@ import com.movit.platform.im.manager.GroupManager;
 import com.movit.platform.im.module.group.activity.GroupChatActivity;
 import com.movit.platform.im.module.group.entities.Group;
 import com.movit.platform.im.module.single.activity.ChatActivity;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -88,8 +91,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -484,6 +489,12 @@ public class WebViewActivity extends BaseActivity implements OnCheckedChangeList
                 }
             }
 
+            @Override
+            public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+                callback.invoke(origin, true, false);
+                super.onGeolocationPermissionsShowPrompt(origin, callback);
+            }
+
         };
         mWebView.setWebChromeClient(wvcc);
 
@@ -494,15 +505,15 @@ public class WebViewActivity extends BaseActivity implements OnCheckedChangeList
                                         String contentDisposition, String mimetype,
                                         long contentLength) {
                 if (url.contains("m.exmail.qmail.com/cgi-bin/download?")
-                    && !StringUtils.empty(mimetype)) {
+                        && !StringUtils.empty(mimetype)) {
                     qqmailType = mimetype;
-                    qqFileName =  contentDisposition.replaceAll("\"", "").split("=")[1];
-                    openAttachmentWebView(url,"", "");
-                }else if (url.contains("zh.jianye.com.cn/sys/attachment/sys_att_main/sysAttMain.do?method=download&")){
-                    goutongType = mimetype;
-                    gtFileName =  contentDisposition.replaceAll("\"", "").split("=")[1];
+                    qqFileName = contentDisposition.replaceAll("\"", "").split("=")[1];
                     openAttachmentWebView(url, "", "");
-                }else {
+                } else if (url.contains("zh.jianye.com.cn/sys/attachment/sys_att_main/sysAttMain.do?method=download&")) {
+                    goutongType = mimetype;
+                    gtFileName = contentDisposition.replaceAll("\"", "").split("=")[1];
+                    openAttachmentWebView(url, "", "");
+                } else {
                     Uri uri = Uri.parse(url);
                     Intent intent = new Intent(Intent.ACTION_VIEW, uri);
                     startActivity(intent);
@@ -537,7 +548,7 @@ public class WebViewActivity extends BaseActivity implements OnCheckedChangeList
 
 
         if ("jianye_dbsx".equals(getIntent().getStringExtra("jianye_dbsx"))
-            && !TextUtils.isEmpty(JIANYE_MYERP_SHENPI)) {
+                && !TextUtils.isEmpty(JIANYE_MYERP_SHENPI)) {
             todoRdf.setVisibility(View.GONE);
             loadingMingyuan();
         }
@@ -558,10 +569,10 @@ public class WebViewActivity extends BaseActivity implements OnCheckedChangeList
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if(mIsPageLoading) {
+                if (mIsPageLoading) {
                     return false;
                 }
-                if(url != null && url.startsWith("http")) {
+                if (url != null && url.startsWith("http")) {
                     view.loadUrl(url);
                     return true;
                 } else {
@@ -602,7 +613,7 @@ public class WebViewActivity extends BaseActivity implements OnCheckedChangeList
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
-                mIsPageLoading= true;
+                mIsPageLoading = true;
                 progressBar.setVisibility(View.VISIBLE);
                 progress = 0;
                 myHandler.postDelayed(runnable, 50);// 打开定时器，执行操作
@@ -615,7 +626,7 @@ public class WebViewActivity extends BaseActivity implements OnCheckedChangeList
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                mIsPageLoading= false;
+                mIsPageLoading = false;
                 myHandler.removeCallbacks(runnable);// 关闭定时器处理
                 progressBar.setProgress(100);
                 progressBar.setVisibility(View.GONE);
@@ -668,7 +679,7 @@ public class WebViewActivity extends BaseActivity implements OnCheckedChangeList
         webView.getSettings().setDatabaseEnabled(true);
 
         String ua = webView.getSettings().getUserAgentString();
-        webView.getSettings().setUserAgentString(ua+";jianye-echat");
+        webView.getSettings().setUserAgentString(ua + ";jianye-echat");
 
         // User settings
         webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
@@ -679,7 +690,11 @@ public class WebViewActivity extends BaseActivity implements OnCheckedChangeList
         webView.getSettings().setSupportZoom(true); // 支持缩放
         webView.getSettings().setLoadWithOverviewMode(true);
         webView.getSettings().setBlockNetworkImage(false);
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        webView.getSettings().setDatabaseEnabled(true);
+        webView.getSettings().setDomStorageEnabled(true);
+        //启用地理定位，默认为true
+        webView.getSettings().setGeolocationEnabled(true);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
     }
@@ -856,7 +871,7 @@ public class WebViewActivity extends BaseActivity implements OnCheckedChangeList
 
     @Override
     public void onCheckedChanged(RadioGroup group, int checkedId) {
-        switch (checkedId){
+        switch (checkedId) {
             case R.id.web_actions_tabs_todo:
                 mWebView.loadUrl(getIntent().getStringExtra("URL"));
                 break;
@@ -1311,7 +1326,7 @@ public class WebViewActivity extends BaseActivity implements OnCheckedChangeList
         try {
             // 获取文件file的MIME类型
             String type = null;
-            if (fileLink.contains("m.exmail.qmail.com/cgi-bin/download?")){
+            if (fileLink.contains("m.exmail.qmail.com/cgi-bin/download?")) {
                 type = qqmailType;
             } else if (fileLink.contains("zh.jianye.com.cn/sys/attachment/sys_att_main/sysAttMain.do?method=download")) {
                 type = goutongType;
