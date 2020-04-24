@@ -57,13 +57,13 @@ android {
     productFlavors {
         jianye {
             applicationId 'com.jianye.smart'
-            versionCode 160
-            versionName '1.6.0'
+            versionCode 410
+            versionName '4.1.0'
         }
         jianyetest {
             applicationId 'com.jianye.smarttest'
-            versionCode 160
-            versionName '1.6.0'
+            versionCode 410
+            versionName '4.1.0'
         }
     }
 
