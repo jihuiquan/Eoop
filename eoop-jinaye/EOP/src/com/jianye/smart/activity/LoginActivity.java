@@ -87,6 +87,7 @@ public class LoginActivity extends Activity {
         spUtil = new SharedPreUtils(this);
         CommConstants.isExit = false;
         iniView();
+        //修改410登录bug
         mTelephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         //注册广播
         IntentFilter filter = new IntentFilter(CommConstants.ACTION_ORGUNITION_DONE);
