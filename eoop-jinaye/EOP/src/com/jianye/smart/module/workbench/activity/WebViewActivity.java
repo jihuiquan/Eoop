@@ -1650,7 +1650,9 @@ public class WebViewActivity extends BaseActivity implements OnCheckedChangeList
                         mWebView.loadUrl("javascript:reportDetail.setImageUrl('" + takePicturePath + "','" + body.toString()
                                 + "')");
                     }
+                    
                 });
+
             }
         }
     }
