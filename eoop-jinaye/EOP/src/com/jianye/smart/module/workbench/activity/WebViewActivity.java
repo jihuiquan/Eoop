@@ -229,6 +229,8 @@ public class WebViewActivity extends BaseActivity implements OnCheckedChangeList
         pb = new ProgressBar(this);
         pb.setVisibility(View.GONE);
 
+
+        //功能迭代开发
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
 
         todoRdf = (FrameLayout) findViewById(R.id.web_actions_tabs_fl);
@@ -1649,7 +1651,7 @@ public class WebViewActivity extends BaseActivity implements OnCheckedChangeList
                         mWebView.loadUrl("javascript:reportDetail.setImageUrl('" + takePicturePath + "','" + body.toString()
                                 + "')");
                     }
-                    
+
                 });
 
             }
