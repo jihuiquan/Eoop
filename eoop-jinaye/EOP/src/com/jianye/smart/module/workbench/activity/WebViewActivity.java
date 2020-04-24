@@ -226,7 +226,7 @@ public class WebViewActivity extends BaseActivity implements OnCheckedChangeList
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_web_view);
-
+        //Dev功能迭代
         pb = new ProgressBar(this);
         pb.setVisibility(View.GONE);
 
