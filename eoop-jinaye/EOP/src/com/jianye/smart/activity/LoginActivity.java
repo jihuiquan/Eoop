@@ -88,6 +88,7 @@ public class LoginActivity extends Activity {
         CommConstants.isExit = false;
         iniView();
         //登录修改测试git提交
+        //登录修改测试git提交
         mTelephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
         //注册广播
         IntentFilter filter = new IntentFilter(CommConstants.ACTION_ORGUNITION_DONE);
